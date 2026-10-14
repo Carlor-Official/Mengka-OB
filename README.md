@@ -10,6 +10,7 @@
 
 - [部署与初始化](docs/deployment.md)
 - [控制台菜单与官机功能](docs/console-navigation.md)
+- [正文页 NT 布局基线](docs/frontend-nt-layout.md)
 - [账号消息与登录设置](docs/account-features.md)
 - [官方接口调试](docs/api.md)
 - [插件服务与导入](docs/plugins.md)
