@@ -9,6 +9,7 @@
 ## 使用文档
 
 - [部署与初始化](docs/deployment.md)
+- [账号消息与登录设置](docs/account-features.md)
 - [官方接口调试](docs/api.md)
 - [插件服务与导入](docs/plugins.md)
 
