@@ -38,7 +38,13 @@
 
 返回 `{"type":"action.result","id":"request-001","success":true,"data":{...}}`，失败时 `success:false` 并带 `error`。
 
-可授权的接口是框架官方调试目录中的 9 个 action。`get_bot_list` 只返回该服务获准访问的 Bot，绝不返回 AppSecret。其余 Bot 相关请求必须带已授权的 `app_id`。
+可授权的官方接口包括原有 9 个 action 及 `ack_interaction`。`get_bot_list` 只返回该服务获准访问的 Bot，绝不返回 AppSecret。其余 Bot 相关请求必须带已授权的 `app_id`。
+
+0.4 增加 `publish_asset`（本服务数据文件发布为短期图片 URL）、`expose_http`（托管 IPC 进程的本机网页入口）、`registry_manage`（全局机器人注册表管理）和 `issue_login_ticket`（已授权管理员的私聊一次性登录）。后两者是高权限，必须单独授予；框架校验私聊发送者，不接受插件自报身份。服务配置及动作响应缓存均加密存储。登录凭据在权限、配置、令牌改变或服务停用后不可兑换。
+
+IPC 进程获得 `OB_PLUGIN_DATA_DIR`，升级包不覆盖持久化数据。`upload_media` 可在 payload 中使用 `file_ref`，仅允许引用受信任 IPC 服务自己的数据文件，最多 8 MiB。图片发布需要在服务配置设置本站 HTTPS `public_base_url`。
+
+托管插件可在 hello 中声明 `event: "lifecycle"`；框架先显示启动中，收到 `{"type":"runtime.status","event":"ready"}` 才显示已连接。业务初始化失败发送 `event: "error"` 后应退出，不能只完成管道握手就报告业务就绪。
 
 请求 ID 按服务持久化。同一 ID、参数和授权上下文重复提交会返回原结果；参数或授权变化不允许复用 ID。服务重启后仍不重复执行已提交的请求。崩溃后结果未知的请求返回“结果未知”，不会自动再次执行。每服务每分钟最多 120 次 action。
 
