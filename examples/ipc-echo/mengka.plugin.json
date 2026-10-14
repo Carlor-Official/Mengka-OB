@@ -1,0 +1,17 @@
+{
+  "schema": "mengka-ob/plugin@1",
+  "protocol": "obp/1",
+  "id": "example-echo",
+  "name": "OB IPC 示例",
+  "version": "1.0.0",
+  "transport": "ipc",
+  "description": "收到 /ob ping 后，通过已授权的官方消息接口回复。",
+  "entrypoints": {
+    "windows/amd64": {"path": "echo.exe"},
+    "linux/amd64": {"path": "echo"}
+  },
+  "permissions": {
+    "actions": ["send_message"],
+    "events": ["GROUP_AT_MESSAGE_CREATE", "C2C_MESSAGE_CREATE"]
+  }
+}
