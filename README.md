@@ -9,6 +9,7 @@
 ## 使用文档
 
 - [部署与初始化](docs/deployment.md)
+- [算法系统接入与独立版本限制](docs/algorithm-integration.md)
 - [控制台菜单与官机功能](docs/console-navigation.md)
 - [正文页 NT 布局基线](docs/frontend-nt-layout.md)
 - [0.7.1 系统检视与优化](docs/system-review.md)
