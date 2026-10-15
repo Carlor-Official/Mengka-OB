@@ -6,11 +6,17 @@
 
 管理员密码使用 bcrypt 哈希保存。请一起备份数据目录里的 SQLite 数据库和 `master.key`；加密密钥丢失将无法解密机器人凭据。已完成初始化的实例不能通过初始化接口覆盖管理员。
 
-在账号列表添加 AppID、AppSecret、接入协议与 Intents，保存后默认停用。确认配置后启用。
+在账号列表添加 AppID、AppSecret、接入协议与名称，保存后默认停用。确认配置后启用。事件订阅无需手填数字：WebSocket 新账号沿用云平台默认的群聊与私聊事件，编辑时保留已有订阅；Webhook 在开放平台选择要推送的事件。
 
 - WebSocket：程序主动连接 QQ 网关，无需公开回调端口。
-- Webhook：给实例提供 HTTPS 地址，把账号信息中的 `/webhooks/qq/{botID}` 路径配置到 QQ 开放平台。
+- Webhook：填写已指向萌卡OB的公网 HTTPS 源地址，弹窗将按 AppID 预览完整的 `/webhooks/official/{AppID}` 回调地址，可直接复制。先保存并启用账号，再到开放平台粘贴地址并验证。原有 `/webhooks/qq/{botID}` 路径继续有效。
 - 代理节点：支持 HTTP/HTTPS/SOCKS5；账号可选择直连或已启用节点。修改节点前先停用使用它的账号。
+
+0.7.2-dev 在添加/编辑账号时自动探测出站公网 IP，并提供复制与重试按钮。使用代理节点时探测同一节点的出口，未选择节点时沿用服务器默认网络（包括环境代理）。如平台要求 IP 白名单，应填写出站公网 IP，而不是浏览器 IP、内网 IP 或回调域名的解析地址。分流代理或多出口网络仍应核对 QQ API 的实际出口；探测失败不会显示替代地址。
+
+探测通过后端访问 [ipify 公网 IP 服务](https://www.ipify.org)，不发送 AppSecret、访问令牌或浏览器 Cookie。支持分别探测 IPv4/IPv6，显示成功取得的地址与探测时间。此功能要求 0.7.2-dev 后端。
+
+公网地址预览只用于生成链接，不会代办 DNS、证书或开放平台配置；本地 `127.0.0.1` 无法用作官方回调。HTTPS 与端口要求参见 [QQ 官方回调文档](https://bot.q.qq.com/wiki/develop/api-v2/dev-prepare/interface-framework/event-emit.html)。
 
 不要让多个进程同时使用同一数据目录。程序重启会使管理员会话失效；自动登录开关只控制是否恢复上次已启用的 Bot，不会把停用账号自动启用。
 
