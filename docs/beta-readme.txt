@@ -1,18 +1,24 @@
-萌卡OB 1.0.0beta 内测版（内部版本：1.0.0-beta）
+萌卡OB 1.0.0beta.1 内测修正版（内部版本：1.0.0-beta.1）
 
 首次使用
 1. 将整个压缩包解压到独立目录，保留 web/dist 与程序的相对位置。
 2. Windows：在解压目录运行 mengka-ob.exe。
    Linux：进入解压目录，运行 chmod +x mengka-ob && ./mengka-ob。
-3. 打开 http://127.0.0.1:18080，阅读协议并设置自己的管理员账号和密码。
+3. 本机打开 http://127.0.0.1:18080；服务器部署打开 http://服务器公网IP:18080。
+   阅读协议并设置自己的管理员账号和密码。
 4. 框架自动向算法系统登记 OB 账号；接入就绪后添加自己的官方机器人。
 
 服务器部署
-默认仅监听本机。需要反向代理时，可使用：
+默认监听全部网卡。云安全组与系统防火墙需放行 TCP 18080（或自己设置的端口）。
+只需要本机反向代理连接时，可使用：
   ./mengka-ob -listen 127.0.0.1:18080 -data ./data -web ./web/dist
 反向代理域名配置公网 HTTPS 后，复制账号页给出的 Webhook 回调地址到 QQ 开放平台。
 WebSocket 与 Webhook 由每个 Bot 独立配置。部分 AppID 需要在开放平台配置服务器出站 IP 白名单。
-如需远程访问内测界面，可在私有网络部署或自行配置 HTTPS 反向代理。
+公网 IP＋端口可直接打开管理页；官方 Webhook 回调仍要求 HTTPS。
+未指定 -listen 时，初始化保存的端口在重启后生效；显式 -listen 优先。
+可用 MENGKA_OB_LISTEN_HOST 限制监听网卡而不覆盖保存端口。
+完整包从其他目录启动时默认使用程序旁的 data 与 web/dist。
+详细部署和 systemd 示例：https://github.com/Carlor-Official/Mengka-OB/blob/main/docs/deployment.md
 
 升级与备份
 保留并备份整个 data 目录（包括 master.key），不要复制其他用户的 data 或管理员配置。

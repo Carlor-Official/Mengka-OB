@@ -1,28 +1,113 @@
 # 部署与初始化
 
-正式包发布后，请从本仓库 Releases 下载与操作系统、架构匹配的包。当前没有正式发行包，请勿把开发构建视为已经过生产验收的版本。
+## 下载安装
 
-启动程序后，默认访问 `http://127.0.0.1:18080`。首次运行会进入初始化页面，阅读说明后设置管理员账号、密码和端口。新端口在下次启动时生效，显式 `-listen` 参数优先于数据库设置。
+从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测修正版为 `1.0.0-beta.1`。
 
-管理员密码使用 bcrypt 哈希保存。请一起备份数据目录里的 SQLite 数据库和 `master.key`；加密密钥丢失将无法解密机器人凭据。已完成初始化的实例不能通过初始化接口覆盖管理员。
+Windows 运行 `mengka-ob.exe`。Linux 进入解压目录后运行：
 
-在账号列表添加 AppID、AppSecret、接入协议与名称，保存后默认停用。确认配置后启用。事件订阅无需手填数字：WebSocket 新账号沿用云平台默认的群聊与私聊事件，编辑时保留已有订阅；Webhook 在开放平台选择要推送的事件。
+```sh
+chmod +x mengka-ob
+./mengka-ob
+```
 
-- WebSocket：程序主动连接 QQ 网关，无需公开回调端口。
-- Webhook：填写已指向萌卡OB的公网 HTTPS 源地址，弹窗将按 AppID 预览完整的 `/webhooks/official/{AppID}` 回调地址，可直接复制。先保存并启用账号，再到开放平台粘贴地址并验证。原有 `/webhooks/qq/{botID}` 路径继续有效。
+默认监听所有网卡的 TCP **18080** 端口，本机访问 `http://127.0.0.1:18080`，服务器部署访问 `http://服务器公网IP:18080`。不需要先配置域名才能打开管理页面。服务器云安全组和操作系统防火墙均需放行相同的 TCP 端口；Windows 首次启动也需允许相应网络的入站访问。
 
-0.7.2-dev 在添加/编辑账号时自动探测出站公网 IP，并提供复制与重试按钮。0.7.3 起统一使用部署服务器默认网络（包括环境代理），不提供独立服务节点。如平台要求 IP 白名单，应填写出站公网 IP，而不是浏览器 IP、内网 IP 或回调域名的解析地址。分流代理或多出口网络仍应核对 QQ API 的实际出口；探测失败不会显示替代地址。
+首次访问按页面完成协议确认、管理员账号和密码初始化。正式添加 Bot 前应先完成自己的管理员配置。
 
-探测通过后端访问 [ipify 公网 IP 服务](https://www.ipify.org)，不发送 AppSecret、访问令牌或浏览器 Cookie。支持分别探测 IPv4/IPv6，显示成功取得的地址与探测时间。此功能要求 0.7.2-dev 后端。
+## 端口与地址优先级
 
-公网地址预览只用于生成链接，不会代办 DNS、证书或开放平台配置；本地 `127.0.0.1` 无法用作官方回调。HTTPS 与端口要求参见 [QQ 官方回调文档](https://bot.q.qq.com/wiki/develop/api-v2/dev-prepare/interface-framework/event-emit.html)。
+1. 显式 `-listen` 同时指定监听地址和端口，优先于保存的端口和环境变量。
+2. 没有 `-listen` 时，使用初始化保存的端口；新安装默认 18080。初始化修改端口在下次启动或框架重启后生效。
+3. 没有 `-listen` 时，`MENGKA_OB_LISTEN_HOST` 可以限制监听网卡；默认不设，监听全部网卡。仅配置这个变量不会覆盖保存的端口。
 
-不要让多个进程同时使用同一数据目录。程序重启会使管理员会话失效；自动登录开关只控制是否恢复上次已启用的 Bot，不会把停用账号自动启用。
+对公网直连，可直接使用默认启动方式，或明确指定：
 
-邮件设置提供保存与显式测试；测试按钮会真正发送邮件。离线通知只作用于从在线状态断开的 WebSocket Bot，主动停用及 Webhook 等待回调不触发掉线通知。
+```sh
+./mengka-ob -listen 0.0.0.0:18080
+```
 
-更新检查读取本仓库公开 Release。当前开发版本采用手动下载升级，不自动安装或覆盖运行中的程序。
+只允许本机反向代理连接时使用：
 
-0.7.3-dev 已移除服务节点整条链路，包括页面、菜单、账号绑定、节点 CRUD 和延迟探测接口。新版启动时清理旧的节点配置与账号节点绑定，保留机器人凭证、启停状态和其他业务数据；升级前请按上文备份整个数据目录。
+```sh
+./mengka-ob -listen 127.0.0.1:18080
+```
 
-0.8.0-dev 接入算法系统的框架账号与 OB 独立版本策略。需先升级算法服务，再切换 OB 后端；接入未就绪、授权失效或版本过低时暂停机器人业务，保留本地管理登录及配置。登记数据范围、心跳和验签说明见 [算法接入](algorithm-integration.md)。
+`1.0.0-beta` 原包默认监听 127.0.0.1，外网无法直连。旧版本可先用 `-listen 0.0.0.0:18080` 临时解决，再升级 beta.1。升级后若 systemd、启动脚本仍明确指定回环地址，框架会尊重该配置；需要直连时应修改自己的启动参数。
+
+## 数据与前端目录
+
+完整安装包的默认 `data`、`web/dist` 相对于程序目录解析，从其他目录运行绝对路径或创建快捷方式不会另建一份空配置。源代码开发目录仍支持工作目录默认值。
+
+旧版若已在当前工作目录生成 `data/platform.db`，而程序目录没有数据库，会继续使用旧数据；两处均有数据库时启动会要求用 `-data` 明确选择。显式相对路径按当前工作目录解析，后台部署建议使用绝对路径：
+
+```sh
+/opt/mengka-ob/mengka-ob -data /opt/mengka-ob/data -web /opt/mengka-ob/web/dist
+```
+
+缺少前端入口时程序会报错退出，避免显示空白页面或在错误位置创建管理员。不要只拷贝可执行文件，需保留整个 `web/dist`。
+
+## Linux 后台与开机启动
+
+将完整安装目录放在 `/opt/mengka-ob`，创建专用运行用户并让它拥有该目录（在线升级需要写入程序和前端目录）：
+
+```sh
+sudo useradd --system --home-dir /opt/mengka-ob --shell /usr/sbin/nologin mengka-ob
+sudo chown -R mengka-ob:mengka-ob /opt/mengka-ob
+```
+
+保存 `/etc/systemd/system/mengka-ob.service`：
+
+```ini
+[Unit]
+Description=Mengka OB
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mengka-ob
+Group=mengka-ob
+WorkingDirectory=/opt/mengka-ob
+ExecStart=/opt/mengka-ob/mengka-ob
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=30
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now mengka-ob
+sudo systemctl status mengka-ob --no-pager
+sudo journalctl -u mengka-ob -n 50 --no-pager
+```
+
+这个示例没有写死 `-listen`，初始化保存的端口在重启后可生效。需要限制本机访问时，可在 `[Service]` 添加 `Environment=MENGKA_OB_LISTEN_HOST=127.0.0.1`。
+
+## 外网访问排查
+
+先在服务器执行：
+
+```sh
+ss -lntp | grep ':18080'
+curl --noproxy '*' http://127.0.0.1:18080/healthz
+```
+
+- 没有监听：检查日志、目录权限、前端文件是否完整和端口是否被其他服务占用。
+- 显示 `127.0.0.1:18080`：检查旧程序、`-listen` 参数及监听环境变量。该地址只允许服务器自身访问。
+- 显示 `*:18080`、`0.0.0.0:18080` 或 `[::]:18080` 且本机健康检查正常：从另一台设备访问公网 IP；若超时，再检查云安全组、系统防火墙与 NAT 端口映射。
+- 修改端口后需同步调整云安全组、防火墙、反向代理和访问 URL。不要把服务器的 NAT 公网 IP 直接设为本地监听网卡。
+
+直接 HTTP 管理页与官方 Webhook 回调是两回事：管理页可用 IP＋端口访问；Webhook 回调仍需开放平台要求的公网 HTTPS 地址。
+
+## 官方机器人与升级
+
+添加 AppID、AppSecret、接入方式与名称，保存后默认停用。WebSocket 主动连接 QQ 网关；Webhook 使用账号页生成的 `/webhooks/official/{AppID}` 回调地址，配置 HTTPS 后在开放平台验证。仅部分账号需要设置出站 IP 白名单，框架探测的出站 IP 不替代 HTTPS 回调域名。
+
+管理员密码使用 bcrypt 保存。备份整个 `data` 目录，尤其数据库与 `master.key`；密钥丢失将无法解密 Bot 凭据。不要让多个进程共用同一数据目录，也不要使用 NT 的数据目录。
+
+计划内重启可保留未过期的管理会话，自动登录只恢复原有已启用的 Bot。在线更新、一键重启和独立 OB 最低版本策略见 [更新与重启](runtime-update.md)、[算法接入](algorithm-integration.md)。
