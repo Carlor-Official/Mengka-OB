@@ -4,13 +4,13 @@
 
 本仓库用于发布发行包、使用文档和接收问题反馈，前后端源码分别维护在私有仓库中。
 
-当前内测版为 **1.0.0beta.1**（内部版本 `1.0.0-beta.1`）。[下载内测安装包](https://github.com/Carlor-Official/Mengka-OB/releases/tag/v1.0.0-beta.1)；支持 Windows amd64、Linux amd64 和 Linux arm64。首次启动由用户自行初始化，不包含预设账号或机器人配置。
+当前内测版为 **1.0.1beta**（内部版本 `1.0.1-beta`）。[下载内测安装包](https://github.com/Carlor-Official/Mengka-OB/releases/tag/v1.0.1-beta)；支持 Windows amd64、Linux amd64 和 Linux arm64。首次启动由用户自行初始化，不包含预设账号或机器人配置。
 
 已提供多 Bot 管理、官方接口调试、插件服务与导入、站点设置、邮件通知、算法接入、一键重启与强制更新。请先使用测试 Bot 验收自己的权限、网络和业务收发。
 
 ## 使用文档
 
-- [1.0.0beta.1 内测说明](docs/beta-readme.txt)
+- [1.0.1beta 内测说明](docs/beta-readme.txt)
 
 - [部署与初始化](docs/deployment.md)
 - [算法系统接入与独立版本限制](docs/algorithm-integration.md)

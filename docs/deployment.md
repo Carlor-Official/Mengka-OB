@@ -2,7 +2,7 @@
 
 ## 下载安装
 
-从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测修正版为 `1.0.0-beta.1`。
+从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测修正版为 `1.0.1-beta`。
 
 Windows 运行 `mengka-ob.exe`。Linux 进入解压目录后运行：
 
@@ -33,7 +33,7 @@ chmod +x mengka-ob
 ./mengka-ob -listen 127.0.0.1:18080
 ```
 
-`1.0.0-beta` 原包默认监听 127.0.0.1，外网无法直连。旧版本可先用 `-listen 0.0.0.0:18080` 临时解决，再升级 beta.1。升级后若 systemd、启动脚本仍明确指定回环地址，框架会尊重该配置；需要直连时应修改自己的启动参数。
+`1.0.0-beta` 原包默认监听 127.0.0.1，外网无法直连。旧版本可先用 `-listen 0.0.0.0:18080` 临时解决，再升级 1.0.1beta。升级后若 systemd、启动脚本仍明确指定回环地址，框架会尊重该配置；需要直连时应修改自己的启动参数。
 
 ## 数据与前端目录
 
