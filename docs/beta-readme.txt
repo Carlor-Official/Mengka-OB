@@ -1,7 +1,12 @@
-萌卡OB 1.0.3beta 内测版（内部版本：1.0.3-beta）
+萌卡OB 1.0.4beta 内测版（内部版本：1.0.4-beta）
 
-本版已整合图片显示修复与 Markdown 分屏预览，无需另装旧版前端补丁。
+本版整合图片缓存、Markdown 按钮、实时聊天、会话筛选、昵称补查及更新弹窗修复。
 聊天工具栏选择 Markdown 后可实时预览；Enter 换行，Ctrl+Enter 或按钮发送。
+聊天列表支持全部、群聊、私聊筛选；新消息实时更新，阅读历史时保留位置。
+昵称查询默认仅使用官方接口。缺少腾讯群成员查询权限时，可在账号设置主动选择
+“官方优先，OIAPI 备用”。备用线路仅发送 AppID 和用户 OpenID，不发送密钥或聊天内容。
+已有昵称优先保留，缺失资料分批查询；第三方服务未提供结果时仍保留用户标识。
+已过期且从未缓存的旧图片无法恢复；新消息中的受支持 QQ 图片会提前缓存。
 
 首次使用
 1. 将整个压缩包解压到独立目录，保留 web/dist 与程序的相对位置。
@@ -16,6 +21,8 @@
 只需要本机反向代理连接时，可使用：
   ./mengka-ob -listen 127.0.0.1:18080 -data ./data -web ./web/dist
 反向代理域名配置公网 HTTPS 后，复制账号页给出的 Webhook 回调地址到 QQ 开放平台。
+反向代理必须保留原域名 Host（Nginx 使用 proxy_set_header Host $http_host），
+不要设置成 localhost；同时转发 WebSocket Upgrade、关闭 SSE 响应缓冲。
 WebSocket 与 Webhook 由每个 Bot 独立配置。部分 AppID 需要在开放平台配置服务器出站 IP 白名单。
 公网 IP＋端口可直接打开管理页；官方 Webhook 回调仍要求 HTTPS。
 未指定 -listen 时，初始化保存的端口在重启后生效；显式 -listen 优先。

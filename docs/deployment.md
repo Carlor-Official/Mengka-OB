@@ -2,7 +2,7 @@
 
 ## 下载安装
 
-从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测版为 `1.0.3-beta`。
+从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测版为 `1.0.4-beta`。
 
 Windows 运行 `mengka-ob.exe`。Linux 进入解压目录后运行：
 
@@ -101,6 +101,27 @@ curl --noproxy '*' http://127.0.0.1:18080/healthz
 - 显示 `127.0.0.1:18080`：检查旧程序、`-listen` 参数及监听环境变量。该地址只允许服务器自身访问。
 - 显示 `*:18080`、`0.0.0.0:18080` 或 `[::]:18080` 且本机健康检查正常：从另一台设备访问公网 IP；若超时，再检查云安全组、系统防火墙与 NAT 端口映射。
 - 修改端口后需同步调整云安全组、防火墙、反向代理和访问 URL。不要把服务器的 NAT 公网 IP 直接设为本地监听网卡。
+
+### 域名反向代理
+
+反向代理必须保留浏览器访问的域名，不能把 `Host` 设置为 `localhost` 或上游 IP；否则登录续期与 WebSocket 会被同源校验拒绝，可能反复进入服务恢复页。宝塔反向代理的“发送域名”请使用原域名，或在 Nginx 中使用 `$http_host`（同时保留访问端口）。
+
+```nginx
+location / {
+    proxy_pass http://127.0.0.1:18080;
+    proxy_http_version 1.1;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_buffering off;
+    proxy_read_timeout 600s;
+}
+```
+
+聊天实时通知使用 SSE，代理需要关闭响应缓冲；账号状态和插件 WebSocket 需要转发 Upgrade。修改配置后先执行 `nginx -t` 再重载。保持后端跨站校验开启，无需放开任意 Origin。
 
 直接 HTTP 管理页与官方 Webhook 回调是两回事：管理页可用 IP＋端口访问；Webhook 回调仍需开放平台要求的公网 HTTPS 地址。
 
