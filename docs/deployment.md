@@ -2,7 +2,7 @@
 
 ## 下载安装
 
-从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测版为 `1.0.5-beta`。
+从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测版为 `1.0.6-beta`。
 
 Windows 运行 `mengka-ob.exe`。Linux 进入解压目录后运行：
 
