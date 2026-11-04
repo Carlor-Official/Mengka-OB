@@ -2,7 +2,7 @@
 
 ## 下载安装
 
-从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前内测版为 `1.0.6-beta`。
+从 [Releases](https://github.com/Carlor-Official/Mengka-OB/releases) 下载对应 Windows amd64、Linux amd64 或 Linux arm64 安装包，完整解压到独立目录。当前正式版为 `1.0.0`。
 
 Windows 运行 `mengka-ob.exe`。Linux 进入解压目录后运行：
 
@@ -13,7 +13,7 @@ chmod +x mengka-ob
 
 默认监听所有网卡的 TCP **18080** 端口，本机访问 `http://127.0.0.1:18080`，服务器部署访问 `http://服务器公网IP:18080`。不需要先配置域名才能打开管理页面。服务器云安全组和操作系统防火墙均需放行相同的 TCP 端口；Windows 首次启动也需允许相应网络的入站访问。
 
-首次访问按页面完成协议确认、管理员账号和密码初始化。正式添加 Bot 前应先完成自己的管理员配置。
+首次访问按页面完成协议确认、管理员账号和密码初始化，无需注册卡或验证端账号。验证端仅检查OB独立版本策略。正式添加 Bot 前应先完成自己的管理员配置。
 
 ## 端口与地址优先级
 
@@ -131,4 +131,6 @@ location / {
 
 管理员密码使用 bcrypt 保存。备份整个 `data` 目录，尤其数据库与 `master.key`；密钥丢失将无法解密 Bot 凭据。不要让多个进程共用同一数据目录，也不要使用 NT 的数据目录。
 
-计划内重启可保留未过期的管理会话，自动登录只恢复原有已启用的 Bot。在线更新、一键重启和独立 OB 最低版本策略见 [更新与重启](runtime-update.md)、[算法接入](algorithm-integration.md)。
+计划内重启可保留未过期的管理会话，自动登录只恢复原有已启用的 Bot。在线更新、一键重启和独立 OB 最低版本策略见 [更新与重启](runtime-update.md)、[版本检查](algorithm-integration.md)。
+
+正式版从1.0.0开始编号。从版本号更高的beta切换时，先停止旧实例，手动替换程序及整个`web/dist`并保留原`data`与`master.key`；在线更新器不会将较低版本号当作更新。详见[1.0.0升级说明](releases/1.0.0.md)。

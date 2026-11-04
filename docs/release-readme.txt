@@ -1,0 +1,46 @@
+萌卡 OB 1.0.0 正式版
+
+面向 QQ 官方机器人的自托管框架，支持多 Bot、WebSocket / Webhook、聊天管理及独立插件服务。
+本版采用 OB 独立版本策略，无需注册卡、验证端账号、设备登记或授权续期。
+验证端仅检查版本最低要求与启停，不接收机器人配置、消息、插件数据或管理员凭据。
+
+首次使用
+1. 将完整压缩包解压到独立目录，保留 web/dist 与程序的相对位置。
+2. Windows 运行 mengka-ob.exe；Linux 运行 chmod +x mengka-ob && ./mengka-ob。
+3. 本机打开 http://127.0.0.1:18080；服务器部署打开 http://服务器公网IP:18080。
+4. 阅读协议，设置自己的管理员账号、密码和服务端口，再添加官方机器人。
+   不需要购买或填写注册卡。首次版本检查暂不可用时仍可初始化。
+
+服务器部署
+默认监听全部网卡，云安全组和系统防火墙需放行 TCP 18080（或自定端口）。
+仅供本机反向代理时可使用：
+  ./mengka-ob -listen 127.0.0.1:18080 -data ./data -web ./web/dist
+使用公网 HTTPS 后，将账号页生成的 /webhooks/official/{AppID} 回调填入 QQ 开放平台。
+反向代理需保留原域名 Host、转发 WebSocket Upgrade，并关闭 SSE 响应缓冲。
+公网 IP＋端口可访问管理页；QQ Webhook 回调仍要求 HTTPS。
+完整文档：https://github.com/Carlor-Official/Mengka-OB/blob/main/docs/deployment.md
+
+升级与备份
+正式版从 1.0.0 开始编号，历史 beta 发布保留。
+从版本号高于 1.0.0 的 beta 切换时，请停止旧实例，手动替换框架程序与整个 web/dist，
+保留原 data 目录以及 master.key；在线更新器不会把较低版本号当作更新。
+不要解压覆盖或删除 data，不要使用其他用户或萌卡 NT 的数据目录。
+每次升级前备份 data；同一目录只能由一个框架实例运行。
+原来配置 /ob-access 授权适配地址的实例，应改用版本服务源地址：
+  MENGKA_OB_VERIFIER_URL=https://qqsign.bilibilibot.com
+删除旧 MENGKA_OB_REGISTRATION_FILE 配置；历史加密身份可保留，新版不读取或上传。
+已知版本限制在断网或重启后仍然生效；版本服务故障时沿用上次有效策略。
+
+功能与边界
+聊天发送原位显示进度，失败或未确认状态按实际接口结果保留；不会把超时自动当作未发送补发。
+包含切页空白、插件回执查询阻塞修复，有界会话请求队列、期限、请求幂等与图片内容复用。
+图片缓存支持管理员配置额度及过期清理，未过期图片不会因本次升级被提前删除。
+业务插件需自行导入和授权；B站、X等业务规则与插件升级不包含在框架安装包内。
+IPC 使用 obp/1 协议，不直接兼容 NT 插件二进制。真实 QQ 收发取决于应用权限与网络。
+Windows amd64、Linux amd64 已进行实际包启动验证；Linux arm64仅交叉编译与架构检查。
+框架使用 Go 1.26.10 与 Garble 0.17.0 构建，不附源码或前端 source map。
+
+发行包仅含框架程序、编译前端、说明和版本清单。
+不包含机器人配置、业务插件包、插件数据、订阅、数据库、管理员账号或登录凭据。
+问题反馈：https://github.com/Carlor-Official/Mengka-OB/issues
+请勿提交 AppSecret、密码、令牌、数据库或含私人消息的日志。
