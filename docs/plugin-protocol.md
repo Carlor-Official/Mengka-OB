@@ -38,7 +38,17 @@
 
 返回 `{"type":"action.result","id":"request-001","success":true,"data":{...}}`，失败时 `success:false` 并带 `error`。
 
-可授权的官方接口包括原有 9 个 action 及 `ack_interaction`。`get_bot_list` 只返回该服务获准访问的 Bot，绝不返回 AppSecret。其余 Bot 相关请求必须带已授权的 `app_id`。
+官方接口完整清单见 `docs/official-api-coverage.json` 和控制台 API 调试目录，包括群管理、菜单、面板、素材、分片上传、流式消息和频道接口。`get_bot_list` 只返回该服务获准访问的 Bot，绝不返回 AppSecret。其余 Bot 相关请求必须带已授权的 `app_id`。
+
+路径参数位于 `params`，如 `target`、`member_openid`、`guild_id`、`channel_id`、`panel_id`；请求体放在 `payload` 中。分页参数 `cursor`、`limit`、`before`、`after` 等位于 `params`。DELETE 接口支持官方定义的 JSON 请求体；频道日程查询的 `since` 按官方 SDK 发送为 JSON。原有 `send_message`、`upload_media`、`delete_message` 继续使用 `scope/target`。`delete_message` 支持频道及频道私信的 `hidetip`。所有请求均不自动重试。
+
+成功时 `data` 保留官方 JSON。官方拒绝请求时返回 `success:false`、`error` 和 `official_response:{http_status,body,trace_id}`，保留官方业务码、说明及扩展字段，只隐藏访问令牌和 AppSecret。框架不预判 QQ 官方接口权限。连接中断等没有获得官方响应的情况，不伪造官方错误码；消息提交结果未知时仍保持隔离。
+
+`send_stream_message` 使用 `scope:"c2c"`；`payload` 为官方流式分片参数，调用方沿用返回的 `stream_msg_id`，递增 `index`，明确指定 `msg_seq`，结束片使用 `input_state:10`。超时后不能换新请求 ID 自动重投。
+
+`send_message` 支持 `msg_type:8` 图文卡片 `card:{type:"tuwen",content:{title,description,url,pic_url}}`；Markdown 的 `force_verify_image_resource`、`qqbot-media://` 图片引用和 `<qqbot-at-everyone />` 原样交给官方。素材上传顺序为 `prepare_media_image` → 用返回的预签名 URL PUT 图片（不携带 QQBot Authorization）→ `complete_media_image`；`get_media_images` 与 `delete_media_image` 管理已上传素材。群/私聊媒体分片接口分别由 `prepare_media_upload`、`finish_media_upload` 的 `scope` 选择。
+
+Python SDK 提供 `context.api.call(action, **params)` 调用上述接口，AppID 绑定当前机器人；`send_stream_message` 提供流式分片入口。官方拒绝时保留原响应对象，不再统一替换为 `QQ API rejected request`。异常携带 `official_response`，未知发送继续抛出 `RPCError`，不能按明确失败重发。
 
 0.4 增加 `publish_asset`（本服务数据文件发布为短期图片 URL）、`expose_http`（托管 IPC 进程的本机网页入口）、`registry_manage`（全局机器人注册表管理）和 `issue_login_ticket`（已授权管理员的私聊一次性登录）。后两者是高权限，必须单独授予；框架校验私聊发送者，不接受插件自报身份。服务配置及动作响应缓存均加密存储。登录凭据在权限、配置、令牌改变或服务停用后不可兑换。
 
@@ -99,6 +109,9 @@ ZIP 最大 32 MiB，解压总量最大 128 MiB，最多 512 项。拒绝路径�
 - `OB_PLUGIN_PROTOCOL`、`OB_PLUGIN_TRANSPORT`
 - `OB_PLUGIN_TOKEN`、`OB_PLUGIN_SERVICE_ID`
 - `OB_PLUGIN_URL`（WS 模式端点）
+- `TZ=Asia/Shanghai`、`OB_TIMEZONE=Asia/Shanghai`（托管进程的产品时区）
+
+框架运行及页面展示默认东八区；数据库时间与协议时间戳继续按 UTC 保存，不改写历史数据。今日统计、聊天日期分隔、日期筛选、图表及新建定时任务使用东八区日界线。已显式指定其他时区的定时任务保持原设置。
 
 运行中的服务需要先暂停或停止才能更新配置；暂停后保存仍保持暂停，不自动恢复执行。引用中的包不能删除。IPC 进程退出后显示异常，需要人工检查并重新启动，不进行无限进程重启。
 
@@ -115,3 +128,9 @@ ZIP 最大 32 MiB，解压总量最大 128 MiB，最多 512 项。拒绝路径�
 调用超时或明确标记结果未知时，不得换新请求ID盲目重发可能已经提交的消息。同一个请求ID及相同参数仍沿用既有幂等保障。框架不替插件决定动态、直播或上舰等业务事件的去重键。
 
 平台管理员可在暂停服务的更新请求中明确传入 `trusted:true`，确认新的 `package_digest`，使替换期间继续保留 `enabled:true, paused:true` 的收件队列。未确认的新包仍不能执行；机器人主人无权利用此字段更换包或扩大权限。
+
+## 插件图片缓存容量
+
+`publish_asset` 对相同图片内容复用不可预测的公开地址，重复发布时续期24小时，避免不同会话重复占用缓存。缓存索引持久保存，旧图片地址继续有效；仅清理过期文件，不为新图提前删除尚未过期的图片。
+
+默认总额度仍为512 MiB。磁盘有余量的部署可通过框架进程环境变量 `MENGKA_OB_PLUGIN_MEDIA_CACHE_MIB` 设置8至8192 MiB；未设置或无效值使用默认额度。此额度由部署管理员控制，插件配置无法扩大额度。达到额度时保留已有图片并明确拒绝新的发布请求，具体降级策略由插件决定。
