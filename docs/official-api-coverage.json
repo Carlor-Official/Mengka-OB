@@ -1,10 +1,18 @@
 {
-  "checked_at": "2026-11-05",
+  "checked_at": "2026-11-16",
   "changelog": "https://bot.q.qq.com/wiki/develop/api-v2/changelog.html",
-  "source": "source-level; no production deployment or public release",
+  "source": "source-level; official QQ documentation checked; included in framework 1.0.4",
   "runtime_timezone": "Asia/Shanghai",
   "storage_timezone": "UTC",
   "routes": [
+    {
+      "action": "get_user_info",
+      "title": "用户资料",
+      "method": "GET",
+      "path": "/v2/users/{user_openid}/info",
+      "query": [],
+      "documentation": "https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_users_user_openid_info.get.html"
+    },
     {
       "action": "generate_url_link",
       "title": "生成分享链接",
@@ -162,6 +170,7 @@
       "method": "GET",
       "path": "/v2/panels",
       "query": [
+        "scope",
         "cursor",
         "limit"
       ]
@@ -710,5 +719,37 @@
     "get_bot_list",
     "get_version_info",
     "get_bot_status"
-  ]
+  ],
+  "documentation_version": "v1.50.0",
+  "latest_changelog_entry": "20261116",
+  "latest_additions": {
+    "user_info": {
+      "action": "get_user_info",
+      "response_fields": [
+        "union_openid",
+        "username",
+        "avatar",
+        "allow_proactive_msg"
+      ]
+    },
+    "c2c_sender_fields": [
+      "author.username",
+      "author.avatar"
+    ],
+    "group_sender_fields": [
+      "author.member_nickname",
+      "author.avatar"
+    ],
+    "group_identity_field": "union_group_openid",
+    "group_identity_sources": [
+      "group info",
+      "GROUP_ADD_ROBOT",
+      "GROUP_DEL_ROBOT",
+      "GROUP_MEMBER_ADD",
+      "GROUP_MEMBER_REMOVE",
+      "GROUP_AT_MESSAGE_CREATE",
+      "GROUP_MESSAGE_CREATE"
+    ],
+    "identity_policy": "Group union identity is metadata only. Bot/group OpenIDs and SDK author IDs remain scoped; no cross-bot contact merging."
+  }
 }
