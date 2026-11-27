@@ -137,7 +137,9 @@ chmod +x ./mengka-ob
 
 Python SDK 面向本机 IPC 插件，封装握手、心跳、机器人上下文、事件处理与接口回执，附带最小回复示例。
 
-下载 [SDK 与示例 ZIP](https://mengka.net/sdk/ob/1.0.4/mengka-ob-python-sdk.zip) 和 [SHA256 校验文件](https://mengka.net/sdk/ob/1.0.4/SHA256SUMS.txt)。安装、调用方式和异常处理见 [Python SDK 文档](https://mengka.net/ob/development/python-sdk.html)。该下载对应框架 1.0.4 的 SDK 快照。
+[SDK 源码](sdk/python/) · [Python 回复示例](sdk/python/examples/echo/) · [构建与验证](sdk/python/README.md#构建与验证)
+
+下载 [SDK 与示例 ZIP](https://github.com/Carlor-Official/Mengka-OB/raw/refs/heads/main/sdk/releases/mengka-ob-python-sdk.zip) 和 [SHA256 校验文件](https://github.com/Carlor-Official/Mengka-OB/raw/refs/heads/main/sdk/releases/mengka-ob-python-sdk.zip.sha256)。安装、调用方式和异常处理见 [Python SDK 文档](https://mengka.net/ob/development/python-sdk.html)。该下载对应框架 1.0.4 的 SDK 快照。
 
 需要 Python 3.10 或更高版本，依赖见归档中的 `requirements.txt`。请按[打包说明](https://mengka.net/ob/development/packaging.html)准备插件入口、清单与运行环境；更新框架不会自动替换已安装插件中的 SDK。
 
@@ -184,7 +186,7 @@ Python SDK 面向本机 IPC 插件，封装握手、心跳、机器人上下文�
 ## 下载与反馈
 
 - 安装包与更新记录：[GitHub Releases](https://github.com/Carlor-Official/Mengka-OB/releases/latest)
-- Python SDK：[下载与接入文档](https://mengka.net/ob/development/python-sdk.html)
+- Python SDK：[源码与示例](sdk/python/) · [下载 ZIP](https://github.com/Carlor-Official/Mengka-OB/raw/refs/heads/main/sdk/releases/mengka-ob-python-sdk.zip) · [接入文档](https://mengka.net/ob/development/python-sdk.html)
 - 使用与开发：[使用指南](https://mengka.net/ob/guide/) · [开发文档](https://mengka.net/ob/development/) · [API 参考](https://mengka.net/ob/api/) · [事件参考](https://mengka.net/ob/events/)
 - Bug 与建议：[提交 Issue](https://github.com/Carlor-Official/Mengka-OB/issues)
 

@@ -1,0 +1,19 @@
+{
+  "frameworkVersion": "1.0.4",
+  "protocol": "obp/1",
+  "sourceCommit": "86771c9aad1a2da15f3edf6603d6324326a1d219",
+  "sdkSnapshot": "1.0.4",
+  "originalArchiveSHA256": "6f01f209179338dfe65e42238ffd9ea06d10d139c91bb1b5b1ff4af49a3c06c8",
+  "moduleSHA256": {
+    "obp/__init__.py": "b36634f82ec09dc1d03dc963d0733b056089e8dde04bba201ef04a99915b3cf8",
+    "obp/assets.py": "8975974e886ddafff8e2aee981587d9e5f205d56beebf53e32833661462222d5",
+    "obp/console_login.py": "18642799454e1162ba4503ccdf7a4a23947e58c93b912d5c5a8912a8fd086965",
+    "obp/helpers.py": "dca4a67b992471d2598678f912814dc9230fdf82bdc80d80cb5435ada19ee32e",
+    "obp/message.py": "22f9ea5c6e13ee96ed1b87ec8332f2f37f99a87b2f5b418ea3c13f6822547ea8",
+    "obp/module.py": "3776d15eea7dc5ceff322530fd149a053da69fd6210f296e292ec9fdf05b0551",
+    "obp/registry.py": "14d1c974eb1a21c96681f7ac6045f008b455c06bab45f35d09af1839025d990b",
+    "obp/runtime.py": "65915a757d0b06955ce2c23c63821151e475d4bc56fa0eaba52221386a0faf1b",
+    "obp/state.py": "378e855201b0ee8715bb73b8db7ab143bef35c548c871224078e3e821f44da75",
+    "obp/web.py": "a07c0f5d72baf2d71c48bb9d9cc4f9f43fb82a440e92c59650529264b0ea8052"
+  }
+}

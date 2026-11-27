@@ -1,0 +1,23 @@
+{
+  "schema": "mengka-ob/plugin@1",
+  "id": "ob-python-echo",
+  "name": "Python 回复示例",
+  "version": "1.0.0",
+  "protocol": "obp/1",
+  "transport": "ipc",
+  "entrypoints": {
+    "any": {
+      "runtime": "python",
+      "path": "main.py"
+    }
+  },
+  "permissions": {
+    "actions": [
+      "send_message"
+    ],
+    "events": [
+      "C2C_MESSAGE_CREATE",
+      "GROUP_AT_MESSAGE_CREATE"
+    ]
+  }
+}
